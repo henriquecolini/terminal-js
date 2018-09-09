@@ -1,0 +1,9 @@
+* {
+	font-family: "Ubuntu Mono", monospace;
+	font-size: 12px;
+}
+
+body {
+	color: white;
+	background: black;
+}
