@@ -1,9 +1,80 @@
 * {
-	font-family: "Ubuntu Mono", monospace;
+	font-family: 'IBMVGA8', monospace;
 	font-size: 16px;
+	margin: 0;
+	padding: 0;
 }
 
 body {
-	color: white;
-	background: black;
+	color: #C0C0C0;
+	background: #000000;
+}
+
+.terminal .l {
+	display: block;
+	white-space: pre;
+}
+
+.black {
+	color: #000000;
+}
+
+.dark-gray {
+	color: #808080;
+}
+
+.light-gray {
+	color: #C0C0C0;
+}
+
+.white {
+	color: #FFFFFF;
+}
+
+.red {
+	color: #800000;
+}
+
+.green {
+	color: #008000;
+}
+
+.yellow {
+	color: #808000;
+}
+
+.blue {
+	color: #000080;
+}
+
+.magenta {
+	color: #800080;
+}
+
+.cyan {
+	color: #008080;
+}
+
+.light-red {
+	color: #FF0000;
+}
+
+.light-green {
+	color: #00FF00;
+}
+
+.light-yellow {
+	color: #FFFF00;
+}
+
+.light-blue {
+	color: #0000FF;
+}
+
+.light-magenta {
+	color: #FF00FF;
+}
+
+.light-cyan {
+	color: #00FFFF;
 }
