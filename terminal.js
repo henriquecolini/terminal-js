@@ -3,7 +3,6 @@ function Terminal() {
 	this.term = document.getElementById("terminal");
 	this.inside = this.term;
 	this.caret = null;
-	this.color = "light-gray";
 	this.colorList = ["black",
 					"dark-gray",
 					"light-gray",
@@ -20,8 +19,9 @@ function Terminal() {
 					"light-blue",
 					"light-magenta",
 					"light-cyan"];
+	this.printQueue = [];
 
-	this.print = function(str) {
+	this.asyncPrint = async function(str) {
 		str = String(str);
 		if (str) {
 
@@ -41,9 +41,6 @@ function Terminal() {
 						let obj = {color:colorMatches[j][0].replace('@{','').replace('}','')};
 
 						values.push(obj);
-						// if ((j < colorMatches.length - 1 && colorMatches[j+1].index != i) && i < str.length) {
-						// 	values.push('');
-						// }
 					}
 				}
 				let c = str.charAt(i);
@@ -57,18 +54,40 @@ function Terminal() {
 				}
 			}
 
-			console.log(values);
+			let cleared = false;
 
-			for (let i = 0; i < values.length; i++) {
+			for (let i = 0; !cleared && i < values.length; i++) {
 				if (typeof values[i] === 'string') {
 					values[i] = values[i].replace('@@{','@{');
-					this.inside.textContent += values[i];
+					for (let c = 0; !cleared && c < values[i].length; c++) {
+						await new Promise(resolve => setTimeout(resolve, 5));
+						if (this.printQueue.length > 0) {
+							this.inside.innerText += values[i].charAt(c);
+						}
+						else {
+							cleared = true;
+						}
+					}
 				}
 				else {
-					this.setColor(values[i].color);
+					this.asyncSetColor(values[i].color);
 				}
 			}
 
+		}
+
+		this.printQueue.shift();
+
+		if (this.printQueue.length > 0) {
+			this.asyncPrint(this.printQueue[0]);
+		}
+
+	}
+
+	this.print = function(str) {
+		this.printQueue.push(str);
+		if (this.printQueue.length == 1) {
+			this.asyncPrint(str);
 		}
 	}
 
@@ -76,15 +95,13 @@ function Terminal() {
 		this.print(str+'\n');
 	}
 
-	this.setColor = function(color){
+	this.asyncSetColor = function(color){
 
 		let sanatized = color.trim().toLowerCase().replace("_","-");
 
 		if(this.colorList.indexOf(sanatized) != -1) {
 
-			this.color = sanatized;
-
-			if (this.inside != this.term && this.inside.textContent === "") {
+			if (this.inside !== this.term && this.inside.textContent === "") {
 				this.inside.className = sanatized;
 			}
 			else {
@@ -99,19 +116,28 @@ function Terminal() {
 
 	}
 
+	this.setColor = function(color){
+		this.print('@{'+color+'}');
+	}
+
 	this.clear = function(){
-		while (this.term.lastChild) {
+		this.printQueue = [];
+		while(this.term.lastChild){
 			this.term.removeChild(this.term.lastChild);
 		}
-		this.inside = this.term;
+		this.createCaret();
+		this.setColor("light-gray");
+	}
+
+	this.createCaret = function() {
+		this.caret = document.createElement("SPAN");
+		this.caret.id = "caret";
+		this.caret.textContent = '█';
 		this.term.appendChild(this.caret);
 	}
 
-	this.caret = document.createElement("SPAN");
-	this.caret.id = "caret";
-	this.caret.textContent = '█';
-	this.term.appendChild(this.caret);
-
+	this.setColor("light-gray");
+	this.createCaret();
 	this.caretState = false;
 	setInterval(function(){
 		this.caretState = !this.caretState;
@@ -131,7 +157,7 @@ t.println("╚═════════════════════╝
 t.print("@{light-green}Welcome to my home page!\n\n");
 t.setColor("light-gray");
 t.println("You can print in this terminal!\n");
-t.println("1. Open the browser terminal");
+t.println("1. Open the developer console");
 t.println('2. t.print(message) will print a message');
 t.println('3. t.println(message) will print a message and include a \\n');
 t.println('4. t.setColor() will change the current color');
