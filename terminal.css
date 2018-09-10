@@ -10,7 +10,7 @@ body {
 	background: #000000;
 }
 
-.terminal .l {
+.terminal {
 	display: block;
 	white-space: pre;
 }

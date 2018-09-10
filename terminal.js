@@ -1,7 +1,8 @@
 function Terminal() {
 
 	this.term = document.getElementById("terminal");
-	this.inside = null;
+	this.inside = this.term;
+	this.caret = null;
 	this.color = "light-gray";
 	this.colorList = ["black",
 					"dark-gray",
@@ -47,17 +48,7 @@ function Terminal() {
 				}
 				let c = str.charAt(i);
 				if (values.length > 0 && typeof values[values.length-1] === 'string') {
-					if (c==='\n') {
-						values.push(c);
-					}
-					else {
-						if (values[values.length-1] === '\n') {
-							values.push(c);
-						}
-						else {
-							values[values.length-1] += c;
-						}
-					}
+					values[values.length-1] += c;
 				}
 				else {
 					if (c !== '') {
@@ -66,15 +57,12 @@ function Terminal() {
 				}
 			}
 
+			console.log(values);
+
 			for (let i = 0; i < values.length; i++) {
 				if (typeof values[i] === 'string') {
 					values[i] = values[i].replace('@@{','@{');
-					if (values[i] === '\n') {
-						this.newLine();
-					}
-					else {
-						this.inside.textContent += values[i];
-					}
+					this.inside.textContent += values[i];
 				}
 				else {
 					this.setColor(values[i].color);
@@ -85,21 +73,7 @@ function Terminal() {
 	}
 
 	this.println = function(str) {
-		this.print(str);
-		this.newLine();
-	}
-
-	this.newLine = function() {
-
-		if (this.inside != null && this.inside.textContent === "") {
-			this.inside.textContent = "\n";
-		}
-
-		let span = document.createElement("SPAN");
-		span.classList.add("l");
-		span.classList.add(this.color);
-		this.term.appendChild(span);
-		this.inside = span;
+		this.print(str+'\n');
 	}
 
 	this.setColor = function(color){
@@ -110,23 +84,14 @@ function Terminal() {
 
 			this.color = sanatized;
 
-			if (this.inside.textContent === "") {
-				if(this.inside.classList.contains("l")){
-					this.inside.className = "";
-					this.inside.classList.add("l");
-					this.inside.classList.add(sanatized);
-				}
-				else {
-					let parent = this.inside.parentNode;
-					this.inside.remove();
-					this.inside = parent;
-				}
+			if (this.inside != this.term && this.inside.textContent === "") {
+				this.inside.className = sanatized;
 			}
 			else {
 				let span = document.createElement("SPAN");
-				span.classList.add(this.color);
+				span.classList.add(sanatized);
 
-				this.inside.appendChild(span);
+				this.term.insertBefore(span,this.caret);
 				this.inside = span;
 			}
 
@@ -135,16 +100,24 @@ function Terminal() {
 	}
 
 	this.clear = function(){
-
 		while (this.term.lastChild) {
 			this.term.removeChild(this.term.lastChild);
 		}
-
-		this.newLine();
-
+		this.inside = this.term;
+		this.term.appendChild(this.caret);
 	}
 
-	this.newLine();
+	this.caret = document.createElement("SPAN");
+	this.caret.id = "caret";
+	this.caret.textContent = '█';
+	this.term.appendChild(this.caret);
+
+	this.caretState = false;
+	setInterval(function(){
+		this.caretState = !this.caretState;
+		this.caret.textContent = this.caretState ? ' ' : '█';
+	},500);
+
 }
 
 let t = new Terminal();
@@ -161,9 +134,8 @@ t.println("You can print in this terminal!\n");
 t.println("1. Open the browser terminal");
 t.println('2. t.print(message) will print a message');
 t.println('3. t.println(message) will print a message and include a \\n');
-t.println('4. t.newLine() will print a \\n');
-t.println('5. t.setColor() will change the current color');
-t.println('6. Additionally, you can include @@{color-codes} on your prints\n');
+t.println('4. t.setColor() will change the current color');
+t.println('5. Additionally, you can include @@{color-codes} on your prints\n');
 
 for (let i = 0; i < t.colorList.length; i++) {
 	t.println('@{'+t.colorList[i]+'}'+t.colorList[i]);
