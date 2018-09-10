@@ -100,7 +100,6 @@ function Terminal() {
 		let span = document.createElement("SPAN");
 		span.classList.add("l");
 		span.classList.add(this.color);
-
 		this.term.appendChild(span);
 		this.inside = span;
 	}
@@ -153,18 +152,21 @@ function Terminal() {
 let t = new Terminal();
 
 t.setColor("light-yellow");
-t.print("╔═════════════════════╗\n║");
-t.setColor("light-cyan");
-t.print(" ☺ Henrique Colini ☺ ")
+t.println("╔═════════════════════╗");
+t.println("║ @{light-cyan}☺ Henrique Colini ☺ @{light-yellow}║")
 t.setColor("light-yellow");
-t.print("║\n╚═════════════════════╝\n\n");
+t.println("╚═════════════════════╝\n");
 
-t.setColor("light-green");
-t.print("Welcome to my home page!\n\n");
+t.print("@{light-green}Welcome to my home page!\n\n");
 t.setColor("light-gray");
-t.println("You can print in this terminal.\n");
-t.println("1. Open the browser terminal (F12,CTRL+i)");
+t.println("You can print in this terminal!\n");
+t.println("1. Open the browser terminal");
 t.println('2. t.print(message) will print a message');
 t.println('3. t.println(message) will print a message and include a \\n');
 t.println('4. t.newLine() will print a \\n');
 t.println('5. t.setColor() will change the current color');
+t.println('6. Additionally, you can include @@{color-codes} on your prints\n');
+
+for (let i = 0; i < t.colorList.length; i++) {
+	t.println('@{'+t.colorList[i]+'}'+t.colorList[i]);
+}
