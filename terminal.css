@@ -1,6 +1,11 @@
 * {
+<<<<<<< HEAD
 	font-family: 'IBMVGA8', monospace;
 	font-size: 16px;
+=======
+	font-family: "Ubuntu Mono", monospace;
+	font-size: 40px;
+>>>>>>> 102322db4c13a718a24c88aaed2483bd31b7a987
 	margin: 0;
 	padding: 0;
 }
