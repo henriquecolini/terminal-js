@@ -23,15 +23,66 @@ function Terminal() {
 	this.print = function(str) {
 		str = String(str);
 		if (str) {
+
+			let regex = /(?<!@)\@\{((([a-z]*|[A-Z]*|[0-9]*|\-))*)\}/gm;
+			let values = [];
+			let colorMatches = [];
+
+			while ((match = regex.exec(str)) != null) {
+				colorMatches.push(match);
+			}
+
 			for (let i = 0; i < str.length; i++) {
+				for (let j = 0; j < colorMatches.length; j++) {
+					if(colorMatches[j].index == i){
+						i+= colorMatches[j][0].length;
+
+						let obj = {color:colorMatches[j][0].replace('@{','').replace('}','')};
+
+						values.push(obj);
+						// if ((j < colorMatches.length - 1 && colorMatches[j+1].index != i) && i < str.length) {
+						// 	values.push('');
+						// }
+					}
+				}
 				let c = str.charAt(i);
-				if (c === '\n') {
-					this.newLine();
+				if (values.length > 0 && typeof values[values.length-1] === 'string') {
+					if (c==='\n') {
+						values.push(c);
+					}
+					else {
+						if (values[values.length-1] === '\n') {
+							values.push(c);
+						}
+						else {
+							values[values.length-1] += c;
+						}
+					}
 				}
 				else {
-					this.inside.textContent += c;
+					if (c !== '') {
+						values.push(c);
+					}
 				}
 			}
+
+			console.log(values);
+
+			for (let i = 0; i < values.length; i++) {
+				if (typeof values[i] === 'string') {
+					values[i] = values[i].replace('@@{','@{');
+					if (values[i] === '\n') {
+						this.newLine();
+					}
+					else {
+						this.inside.textContent += values[i];
+					}
+				}
+				else {
+					this.setColor(values[i].color);
+				}
+			}
+
 		}
 	}
 
@@ -86,6 +137,15 @@ function Terminal() {
 
 	}
 
+	this.clear = function(){
+
+		while (this.term.lastChild) {
+			this.term.removeChild(this.term.lastChild);
+		}
+
+		this.newLine();
+
+	}
 
 	this.newLine();
 }
