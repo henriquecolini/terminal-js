@@ -70,7 +70,12 @@ function Terminal() {
 					}
 				}
 				else {
-					this.asyncSetColor(values[i].color);
+					if (!isNaN(values[i].color)) {
+						this.asyncSetColor(this.colorList[Number(values[i].color)]);
+					}
+					else {
+						this.asyncSetColor(values[i].color);
+					}
 				}
 			}
 
@@ -164,5 +169,5 @@ t.println('4. t.setColor() will change the current color');
 t.println('5. Additionally, you can include @@{color-codes} on your prints\n');
 
 for (let i = 0; i < t.colorList.length; i++) {
-	t.println('@{'+t.colorList[i]+'}'+t.colorList[i]);
+	t.println('@{'+t.colorList[i]+'}' + i + ' - '+t.colorList[i]);
 }

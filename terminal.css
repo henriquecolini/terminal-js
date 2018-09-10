@@ -13,68 +13,84 @@ body {
 .terminal {
 	display: block;
 	white-space: pre;
+	padding: 0.5em;
 }
 
 .black {
-	color: #000000;
+	color: rgb(0, 0, 0);
 }
 
 .dark-gray {
-	color: #808080;
+	color: rgb(128, 128, 128);
+	text-shadow: 0px 0px 30px rgba(128, 128, 128, 0.5);
 }
 
-.light-gray {
-	color: #C0C0C0;
+.light-gray, #caret {
+	color: rgb(193, 193, 193);
+	text-shadow: 0px 0px 30px rgba(193, 193, 193, 0.5);
 }
 
 .white {
-	color: #FFFFFF;
+	color: rgb(255, 255, 255);
+	text-shadow: 0px 0px 30px rgba(255, 255, 255, 0.5);
 }
 
 .red {
-	color: #800000;
+	color: rgb(128, 0, 0);
+	text-shadow: 0px 0px 30px rgba(128, 0, 0, 0.5);
 }
 
 .green {
-	color: #008000;
+	color: rgb(0, 128, 0);
+	text-shadow: 0px 0px 30px rgba(0, 128, 0, 0.5);
 }
 
 .yellow {
-	color: #808000;
+	color: rgb(128, 128, 0);
+	text-shadow: 0px 0px 30px rgba(128, 128, 0, 0.5);
 }
 
 .blue {
-	color: #000080;
+	color: rgb(0, 0, 128);
+	text-shadow: 0px 0px 30px rgba(0, 0, 128, 0.5);
 }
 
 .magenta {
-	color: #800080;
+	color: rgb(128, 0, 127);
+	text-shadow: 0px 0px 30px rgba(128, 0, 127, 0.5);
 }
 
 .cyan {
-	color: #008080;
+	color: rgb(0, 128, 128);
+	text-shadow: 0px 0px 30px rgba(0, 128, 128, 0.5);
 }
 
 .light-red {
-	color: #FF0000;
+	color: rgb(255, 0, 0);
+	text-shadow: 0px 0px 30px rgba(255, 0, 0, 0.5);
 }
 
 .light-green {
-	color: #00FF00;
+	color: rgb(0, 255, 0);
+	text-shadow: 0px 0px 30px rgba(0, 255, 0, 0.5);
 }
 
 .light-yellow {
-	color: #FFFF00;
+	color: rgb(255, 255, 0);
+	text-shadow: 0px 0px 30px rgba(255, 255, 0, 0.5);
 }
 
 .light-blue {
-	color: #0000FF;
+	color: rgb(0, 0, 255);
+	text-shadow: 0px 0px 30px rgba(0, 0, 255, 0.5);
 }
 
 .light-magenta {
-	color: #FF00FF;
+	color: rgb(255, 0, 255);
+	text-shadow: 0px 0px 30px rgba(255, 0, 255, 0.5);
 }
 
 .light-cyan {
-	color: #00FFFF;
+	color: rgb(0, 255, 255);
+	text-shadow: 0px 0px 30px rgba(0, 255, 255, 0.5);
 }
