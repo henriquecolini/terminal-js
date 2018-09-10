@@ -97,4 +97,14 @@ t.print("╔═════════════════════╗\n
 t.setColor("light-cyan");
 t.print(" ☺ Henrique Colini ☺ ")
 t.setColor("light-yellow");
-t.print("║\n╚═════════════════════╝");
+t.print("║\n╚═════════════════════╝\n\n");
+
+t.setColor("light-green");
+t.print("Welcome to my home page!\n\n");
+t.setColor("light-gray");
+t.println("You can print in this terminal.\n");
+t.println("1. Open the browser terminal (F12,CTRL+i)");
+t.println('2. t.print(message) will print a message');
+t.println('3. t.println(message) will print a message and include a \\n');
+t.println('4. t.newLine() will print a \\n');
+t.println('5. t.setColor() will change the current color');
