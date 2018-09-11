@@ -1,4 +1,4 @@
-function Terminal() {
+function Terminal(printDelay=5,printStep=5) {
 
 	this.term = document.getElementById("terminal");
 	this.inside = this.term;
@@ -20,6 +20,8 @@ function Terminal() {
 					"light-magenta",
 					"light-cyan"];
 	this.printQueue = [];
+	this.printDelay = printDelay>=0?printDelay:0;
+	this.printStep = printStep>=1?printStep:1;
 
 	this.asyncPrint = async function(str) {
 		str = String(str);
@@ -59,10 +61,12 @@ function Terminal() {
 			for (let i = 0; !cleared && i < values.length; i++) {
 				if (typeof values[i] === 'string') {
 					values[i] = values[i].replace('@@{','@{');
-					for (let c = 0; !cleared && c < values[i].length; c++) {
-						await new Promise(resolve => setTimeout(resolve, 5));
+					for (let j = 0; !cleared && j < values[i].length; j++) {
+						if (j%this.printStep==0) {
+							await new Promise(resolve => setTimeout(resolve, this.printDelay));
+						}
 						if (this.printQueue.length > 0) {
-							this.inside.innerText += values[i].charAt(c);
+							this.inside.innerText += values[i].charAt(j);
 						}
 						else {
 							cleared = true;
@@ -166,7 +170,7 @@ t.println("1. Open the developer console");
 t.println('2. t.print(message) will print a message');
 t.println('3. t.println(message) will print a message and include a \\n');
 t.println('4. t.setColor() will change the current color');
-t.println('5. Additionally, you can include @@{color-codes} on your prints\n');
+t.println('5. Additionally, you can include @@{color-codes} on your prints (works with numbers too)\n');
 
 for (let i = 0; i < t.colorList.length; i++) {
 	t.println('@{'+t.colorList[i]+'}' + i + ' - '+t.colorList[i]);
