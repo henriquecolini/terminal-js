@@ -19,85 +19,105 @@ function Terminal(printDelay=5,printStep=5) {
 					"light-blue",
 					"light-magenta",
 					"light-cyan"];
-	this.printQueue = [];
+	this.commandQueue = [];
 	this.printDelay = printDelay>=0?printDelay:0;
 	this.printStep = printStep>=1?printStep:1;
+	this.boxStyles = [];
 
-	this.asyncPrint = async function(str) {
-		str = String(str);
-		if (str) {
+	this.boxStyles['template'] = ['A','B','Q','W','C','D'];
+	this.boxStyles['line'] = ['┌','┐','├','┤','└','┘'];
 
-			let regex = /(?<!@)\@\{((([a-z]*|[A-Z]*|[0-9]*|\-))*)\}/gm;
-			let values = [];
-			let colorMatches = [];
+	this.runQueue = async function(cmd) {
 
-			while ((match = regex.exec(str)) != null) {
-				colorMatches.push(match);
-			}
+		if (cmd) {
 
-			for (let i = 0; i < str.length; i++) {
-				for (let j = 0; j < colorMatches.length; j++) {
-					if(colorMatches[j].index == i){
-						i+= colorMatches[j][0].length;
+			if (cmd.type === 'print') {
+				str = cmd.str;
+				if (str) {
 
-						let obj = {color:colorMatches[j][0].replace('@{','').replace('}','')};
+					let regex = /(?<!@)\@\{((([a-z]*|[A-Z]*|[0-9]*|\-))*)\}/gm;
+					let values = [];
+					let colorMatches = [];
 
-						values.push(obj);
+					while ((match = regex.exec(str)) != null) {
+						colorMatches.push(match);
 					}
-				}
-				let c = str.charAt(i);
-				if (values.length > 0 && typeof values[values.length-1] === 'string') {
-					values[values.length-1] += c;
-				}
-				else {
-					if (c !== '') {
-						values.push(c);
-					}
-				}
-			}
 
-			let cleared = false;
+					for (let i = 0; i < str.length; i++) {
+						for (let j = 0; j < colorMatches.length; j++) {
+							if(colorMatches[j].index == i){
+								i+= colorMatches[j][0].length;
 
-			for (let i = 0; !cleared && i < values.length; i++) {
-				if (typeof values[i] === 'string') {
-					values[i] = values[i].replace('@@{','@{');
-					for (let j = 0; !cleared && j < values[i].length; j++) {
-						if (j%this.printStep==0) {
-							await new Promise(resolve => setTimeout(resolve, this.printDelay));
+								let obj = {color:colorMatches[j][0].replace('@{','').replace('}','')};
+
+								values.push(obj);
+							}
 						}
-						if (this.printQueue.length > 0) {
-							this.inside.innerText += values[i].charAt(j);
+						let c = str.charAt(i);
+						if (values.length > 0 && typeof values[values.length-1] === 'string') {
+							values[values.length-1] += c;
 						}
 						else {
-							cleared = true;
+							if (c !== '') {
+								values.push(c);
+							}
 						}
 					}
-				}
-				else {
-					if (!isNaN(values[i].color)) {
-						this.asyncSetColor(this.colorList[Number(values[i].color)]);
+
+					let cleared = false;
+
+					for (let i = 0; !cleared && i < values.length; i++) {
+						if (typeof values[i] === 'string') {
+							values[i] = values[i].replace('@@{','@{');
+							for (let j = 0; !cleared && j < values[i].length; j++) {
+								if (this.printDelay > 0 && j%this.printStep==0) {
+									await new Promise(resolve => setTimeout(resolve, this.printDelay));
+								}
+								if (this.commandQueue.length > 0) {
+									this.inside.innerText += values[i].charAt(j);
+								}
+								else {
+									cleared = true;
+								}
+							}
+						}
+						else {
+							this.asyncSetColor(values[i].color);
+						}
 					}
-					else {
-						this.asyncSetColor(values[i].color);
-					}
+
 				}
+
+				window.scrollTo(0,document.body.scrollHeight);
 			}
 
-		}
+			else if (cmd.type === 'color') {
+				this.asyncSetColor(cmd.color);
+			}
 
-		this.printQueue.shift();
+			else if (cmd.type === 'clear') {
+				this.asyncClear();
+			}
 
-		if (this.printQueue.length > 0) {
-			this.asyncPrint(this.printQueue[0]);
+			this.commandQueue.shift();
+
+			if (this.commandQueue.length > 0) {
+				this.runQueue(this.commandQueue[0]);
+			}
+
 		}
 
 	}
 
-	this.print = function(str) {
-		this.printQueue.push(str);
-		if (this.printQueue.length == 1) {
-			this.asyncPrint(str);
+	this.addToQueue = function(cmd){
+		this.commandQueue.push(cmd);
+		if (this.commandQueue.length == 1) {
+			this.runQueue(cmd);
 		}
+	}
+
+	this.print = function(str) {
+		this.addToQueue({type:'print',str:str});
 	}
 
 	this.println = function(str) {
@@ -106,7 +126,14 @@ function Terminal(printDelay=5,printStep=5) {
 
 	this.asyncSetColor = function(color){
 
-		let sanatized = color.trim().toLowerCase().replace("_","-");
+		let sanatized;
+
+		if (!isNaN(color)) {
+			sanatized = this.colorList[Number(color)];
+		}
+		else {
+			sanatized = color.trim().toLowerCase().replace("_","-");
+		}
 
 		if(this.colorList.indexOf(sanatized) != -1) {
 
@@ -126,11 +153,10 @@ function Terminal(printDelay=5,printStep=5) {
 	}
 
 	this.setColor = function(color){
-		this.print('@{'+color+'}');
+		this.addToQueue({type:'color',color:color});
 	}
 
-	this.clear = function(){
-		this.printQueue = [];
+	this.asyncClear = function(){
 		while(this.term.lastChild){
 			this.term.removeChild(this.term.lastChild);
 		}
@@ -138,11 +164,85 @@ function Terminal(printDelay=5,printStep=5) {
 		this.setColor("light-gray");
 	}
 
+	this.clearAll = function(){
+		this.commandQueue = [];
+		this.asyncClear();
+	}
+
+	this.clear = function(){
+		this.addToQueue({type:'clear'});
+	}
+
 	this.createCaret = function() {
 		this.caret = document.createElement("SPAN");
 		this.caret.id = "caret";
 		this.caret.textContent = '█';
 		this.term.appendChild(this.caret);
+	}
+
+	this.printBox = function(strings,boxColor,boxStyle){
+		if (strings) {
+
+			if (typeof strings === 'string') {
+				strings = [strings];
+			}
+
+			if (typeof boxStyle === 'string') {
+				boxStyle = this.boxStyles[boxStyle];
+			}
+
+			let str = '';
+			let biggest = 0;
+
+			for (let i = 0; i < strings.length; i++) {
+				let len = strings[i].replace(/(?<!@)\@\{((([a-z]*|[A-Z]*|[0-9]*|\-))*)\}/gm,'').length
+				biggest = len > biggest ? len : biggest;
+			}
+
+			str+='\n@{'+boxColor+'}';
+
+			str+=boxStyle[0];
+
+			for (let i = 0; i < biggest; i++) {
+				str+='-';
+			}
+
+			str+=boxStyle[1]+'\n';
+
+			for (let i = 0; i < strings.length; i++) {
+				str+='|';
+
+				for (var j = 0; j < Math.ceil((biggest-strings[i].length)/2); j++) {
+					str+=' ';
+				}
+
+				str+='@{light-gray}'+strings[i];
+
+				for (var j = 0; j < Math.floor((biggest-strings[i].length)/2); j++) {
+					str+=' ';
+				}
+
+				str+='@{'+boxColor+'}|\n';
+				if (i!=strings.length-1) {
+					str+=boxStyle[2];
+					for (let i = 0; i < biggest; i++) {
+						str+='-';
+					}
+					str+=boxStyle[3]+'\n';
+				}
+			}
+
+			str+=boxStyle[4];
+
+			for (let i = 0; i < biggest; i++) {
+				str+='-';
+			}
+
+			str+=boxStyle[5]+'\n';
+
+			this.print(str);
+
+		}
 	}
 
 	this.setColor("light-gray");
