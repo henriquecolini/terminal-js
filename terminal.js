@@ -24,8 +24,12 @@ function Terminal(printDelay=5,printStep=5) {
 	this.printStep = printStep>=1?printStep:1;
 	this.boxStyles = [];
 
-	this.boxStyles['template'] = ['A','B','Q','W','C','D'];
-	this.boxStyles['line'] = ['┌','┐','├','┤','└','┘'];
+	this.boxStyles['template'] = ['0','1','2','3','4','5','6','7'];
+	this.boxStyles['line'] = ['┌','┐','├','┤','└','┘','─','│'];
+	this.boxStyles['double_line'] = ['╔','╗','╠','╣','╚','╝','═','║'];
+	this.boxStyles['thick_line'] = ['█','█','█','█','▀','▀','▀','█'];
+	this.boxStyles['dotted'] = ['.','.',':',':',':',':','.',':'];
+	this.boxStyles['dashed'] = ['┌','┐',':',':','└','┘','-','|'];
 
 	this.runQueue = async function(cmd) {
 
@@ -35,7 +39,7 @@ function Terminal(printDelay=5,printStep=5) {
 				str = cmd.str;
 				if (str) {
 
-					let regex = /(?<!@)\@\{((([a-z]*|[A-Z]*|[0-9]*|\-))*)\}/gm;
+					let regex = /\@\{((([a-z]*|[A-Z]*|[0-9]*|\-))*)\}(?!(\@))/gm;
 					let values = [];
 					let colorMatches = [];
 
@@ -195,7 +199,7 @@ function Terminal(printDelay=5,printStep=5) {
 			let biggest = 0;
 
 			for (let i = 0; i < strings.length; i++) {
-				let len = strings[i].replace(/(?<!@)\@\{((([a-z]*|[A-Z]*|[0-9]*|\-))*)\}/gm,'').length
+				let len = strings[i].replace(/\@\{((([a-z]*|[A-Z]*|[0-9]*|\-))*)\}(?!(\@))/gm,'').length
 				biggest = len > biggest ? len : biggest;
 			}
 
@@ -204,13 +208,13 @@ function Terminal(printDelay=5,printStep=5) {
 			str+=boxStyle[0];
 
 			for (let i = 0; i < biggest; i++) {
-				str+='-';
+				str+=boxStyle[6];
 			}
 
 			str+=boxStyle[1]+'\n';
 
 			for (let i = 0; i < strings.length; i++) {
-				str+='|';
+				str+=boxStyle[7];
 
 				for (var j = 0; j < Math.ceil((biggest-strings[i].length)/2); j++) {
 					str+=' ';
@@ -222,11 +226,11 @@ function Terminal(printDelay=5,printStep=5) {
 					str+=' ';
 				}
 
-				str+='@{'+boxColor+'}|\n';
+				str+='@{'+boxColor+'}'+boxStyle[7]+'\n';
 				if (i!=strings.length-1) {
 					str+=boxStyle[2];
 					for (let i = 0; i < biggest; i++) {
-						str+='-';
+						str+=boxStyle[6];
 					}
 					str+=boxStyle[3]+'\n';
 				}
@@ -235,7 +239,7 @@ function Terminal(printDelay=5,printStep=5) {
 			str+=boxStyle[4];
 
 			for (let i = 0; i < biggest; i++) {
-				str+='-';
+				str+=boxStyle[6];
 			}
 
 			str+=boxStyle[5]+'\n';
