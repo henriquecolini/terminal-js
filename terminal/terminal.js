@@ -125,7 +125,10 @@ function Terminal(printDelay=5,printStep=5) {
 	}
 
 	this.println = function(str) {
-		this.print(str+'\n');
+		if (str)
+			this.print(str+'\n');
+		else
+			this.print('\n');
 	}
 
 	this.asyncSetColor = function(color){
@@ -168,7 +171,7 @@ function Terminal(printDelay=5,printStep=5) {
 		this.setColor("light-gray");
 	}
 
-	this.clearAll = function(){
+	this.reset = function(){
 		this.commandQueue = [];
 		this.asyncClear();
 	}
@@ -184,7 +187,7 @@ function Terminal(printDelay=5,printStep=5) {
 		this.term.appendChild(this.caret);
 	}
 
-	this.printBox = function(strings,boxColor,boxStyle){
+	this.printBox = function(strings,boxColor,boxStyle,lineBefore=true,lineAfter=true){
 		if (strings) {
 
 			if (typeof strings === 'string') {
@@ -203,7 +206,9 @@ function Terminal(printDelay=5,printStep=5) {
 				biggest = len > biggest ? len : biggest;
 			}
 
-			str+='\n@{'+boxColor+'}';
+			str+=lineBefore?'\n':'';
+
+			str+='@{'+boxColor+'}';
 
 			str+=boxStyle[0];
 
@@ -242,7 +247,9 @@ function Terminal(printDelay=5,printStep=5) {
 				str+=boxStyle[6];
 			}
 
-			str+=boxStyle[5]+'\n';
+			str+=boxStyle[5];
+
+			str+=lineAfter?'\n':'';
 
 			this.print(str);
 
@@ -261,21 +268,49 @@ function Terminal(printDelay=5,printStep=5) {
 
 let t = new Terminal();
 
-t.setColor("light-yellow");
-t.println("╔═════════════════════╗");
-t.println("║ @{light-cyan}☺ Henrique Colini ☺ @{light-yellow}║")
-t.setColor("light-yellow");
-t.println("╚═════════════════════╝\n");
+t.printBox("terminal.js","light-blue","double_line",false)
+t.println();
 
-t.print("@{light-green}Welcome to my home page!\n\n");
+t.setColor("light-green");
+t.println("About");
+t.println("------------------------------\n")
+
 t.setColor("light-gray");
-t.println("You can print in this terminal!\n");
-t.println("1. Open the developer console");
-t.println('2. t.print(message) will print a message');
-t.println('3. t.println(message) will print a message and include a \\n');
-t.println('4. t.setColor() will change the current color');
-t.println('5. Additionally, you can include @@{color-codes} on your prints (works with numbers too)\n');
+t.println("terminal.js is a Windows CMD-like terminal made in JavaScript.\n");
+t.println("It doesn't actually do anything. You can't enter any commands - you may only print stuff to it.");
+t.println("Nonetheless, that's already pretty cool.\n")
+
+t.setColor("light-green");
+t.println("Usage");
+t.println("------------------------------\n")
+
+t.setColor("light-gray");
+t.println("So far, you can only print stuff via the developer console (F12 or CTRL+Shift+i).");
+t.println("You can also change the color of the text. The following functions are available:\n");
+
+t.println("@{3}t.print(content)@{1} > This will print content to the terminal.");
+t.println("@{3}t.println(content)@{1} > This will print content to the terminal with a '\\n' included.");
+t.println("@{3}t.setColor(color)@{1} > This change the color of the following text.");
+t.println("@{3}t.clear()@{1} > This will clear the terminal.");
+t.println("@{3}t.reset()@{1} > Similar to t.clear(), this will also clear the queue (more information below).");
+t.println("@{3}t.printBox(content,bc,bs,lb,la)@{1} > This will print a box (more information below).\n");
+
+t.setColor("light-gray");
+t.println("Those async functions are also available (more information below):\n");
+
+t.println("@{3}t.asyncPrint(content)@{1} > Asynchronized print().");
+t.println("@{3}t.asyncSetColor(color)@{1} > Asynchronized setColor().");
+t.println("@{3}t.asyncClear()@{1} > Asynchronized clear().\n");
+
+t.setColor("light-green");
+t.println("Colors");
+t.println("------------------------------\n")
+
+t.setColor("light-gray");
+t.println("So far, you can only print stuff via the developer console (F12 or CTRL+Shift+i).");
+t.println("You can also change the color of the text. The following functions are available:\n");
 
 for (let i = 0; i < t.colorList.length; i++) {
-	t.println('@{'+t.colorList[i]+'}' + i + ' - '+t.colorList[i]);
+	t.print("@{light-gray}"+ i +" > ");
+	t.println('@{'+i+'}'+t.colorList[i]);
 }
