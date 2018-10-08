@@ -9,17 +9,14 @@ t.println("About");
 t.println("------------------------------\n")
 
 t.setColor("light-gray");
-t.println("terminal.js is a Windows CMD-like terminal made in JavaScript.\n");
-t.println("It doesn't actually do anything. You can't enter any commands - you may only print stuff to it.");
-t.println("Nonetheless, that's already pretty cool.\n")
+t.println("terminal.js is a Windows CMD-like terminal made in JavaScript. It doesn't actually do anything. You can't enter any commands - you may only print stuff to it. Nonetheless, that's already pretty cool.\n");
 
 t.setColor("light-green");
 t.println("Usage");
 t.println("------------------------------\n")
 
 t.setColor("light-gray");
-t.println("So far, you can only print stuff via the developer console (F12 or CTRL+Shift+i).");
-t.println("You can also change the color of the text. The following functions are available:\n");
+t.println("So far, you can only print stuff via the developer console (F12 or CTRL+Shift+i). You can also change the color of the text. The following functions are available:\n");
 
 t.println("@{3}t.print(content)@{1} > This will print content to the terminal.");
 t.println("@{3}t.println(content)@{1} > This will print content to the terminal with a '\\n' included.");
@@ -40,8 +37,7 @@ t.println("Colors");
 t.println("------------------------------\n")
 
 t.setColor("light-gray");
-t.println("In order to change the color of the text, call the function t.setColor(color).");
-t.println("'color' can be a number or the name of the color. The following colors are available:\n");
+t.println("In order to change the color of the text, call the function t.setColor(color). 'color' can be a number or the name of the color. The following colors are available:\n");
 
 for (let i = 0; i < t.colorList.length; i++) {
 	t.print("@{light-gray}"+ i +" > ");
@@ -65,8 +61,7 @@ t.println("Delay");
 t.println("------------------------------\n");
 
 t.setColor("light-gray");
-t.println("As you might have noticed, the terminal takes a while to print everything. This is by design.");
-t.println("In fact, the speed in which the text is printed is controlled by two variables:\n");
+t.println("As you might have noticed, the terminal takes a while to print everything. This is by design. In fact, the speed in which the text is printed is controlled by two variables:\n");
 
 t.println("@{3}t.printDelay@{1} > Delay between each step, in ms. Minimum of 5. If set to 0, printing will be instant.");
 t.println("@{3}t.printStep@{1} > How many characters are printed each step. Minimum of 1.\n");
@@ -76,19 +71,14 @@ t.println("Queue and Async functions");
 t.println("------------------------------\n");
 
 t.setColor("light-gray");
-t.println("Because of the delay, the print(), setColor() and clear() functions are added to an execution queue");
-t.println("every time you call one of them. If you want to ignore the queue, you may use the async functions");
-t.println("(described in 'Usage'), which will run instantly, regardless of the queue. These should generally not");
-t.println("be used, as they might cause unexpected behavior, such as two prints merging together or a clear() not");
-t.println("stopping a print in progress. To clear all the text and the queue, use the reset() function.\n");
+t.println("Because of the delay, the print(), setColor() and clear() functions are added to an execution queue every time you call one of them. If you want to ignore the queue, you may use the async functions (described in 'Usage'), which will run instantly, regardless of the queue. These should generally not be used, as they might cause unexpected behavior, such as two prints merging together or a clear() not stopping a print in progress. To clear all the text and the queue, use the reset() function.\n");
 
 t.setColor("light-green");
 t.println("Boxes");
 t.println("------------------------------\n");
 
 t.setColor("light-gray");
-t.println("The function printBox() is a helper function, purely for aesthetical reasons. It prints a box with");
-t.println("text inside. An example is the title of this page. The function is as follows:\n");
+t.println("The function printBox() is a helper function, purely for aesthetical reasons. It prints a box with text inside. An example is the title of this page. The function is as follows:\n");
 
 t.println("@{3}t.printBox(content,boxColor,boxStyle,lineBefore,lineAfter)\n");
 
@@ -106,7 +96,9 @@ t.printBox(["String A","String B"],"light-cyan","template");
 t.setColor("light-gray");
 t.println("\nThere are some predefined styles. To use these, just use a string with its name. The current styles are:");
 
-Object.forEach(t.boxStyles,function(obj,key){
-	t.println("\n"+key);
-	t.printBox(["String A","String B"],"light-cyan",key);
-});
+for (let k in t.boxStyles){
+    if (t.boxStyles.hasOwnProperty(k)) {
+		t.println("\n@{12}"+k);
+		t.printBox(["String A","String B"],"light-cyan",t.boxStyles[k]);
+    }
+}

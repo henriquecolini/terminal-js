@@ -13,7 +13,7 @@ body {
 
 .terminal {
 	display: block;
-	white-space: pre;
+	white-space: pre-wrap;
 	padding: 0.5em;
 }
 
